@@ -1,14 +1,19 @@
 package com.example.test_s19.dipendenti;
 
-import com.example.test_s19.common.CommonResponse;
+import com.example.test_s19.auth.AuthResponse;
+import com.example.test_s19.auth.LoginRequest;
 import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+@Slf4j
 @RestController
 @RequestMapping("/dipendenti")
 public class DipendenteController {
@@ -22,15 +27,22 @@ public class DipendenteController {
 
         return dipendenteService.findAll(page, size, sortBy);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Dipendente findById(@RequestParam Long id) {
         return dipendenteService.getDipendenteById(id);
     }
-    @PostMapping("")
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/current-user")
+    public Dipendente getCurrentUser(@AuthenticationPrincipal Dipendente dipendente) {
+        return dipendente;
+    }
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommonResponse createDipendente(@RequestBody DipendenteRequest request) throws MessagingException {
-        return dipendenteService.createDipendente(request);
+    public ResponseEntity<String> createDipendente(@RequestBody DipendenteAuthRequest request) throws MessagingException {
+        dipendenteService.registerDipendente(request);
+        return ResponseEntity.ok("Registrazione avvenuta con successo");
     }
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -48,5 +60,14 @@ public class DipendenteController {
     public Dipendente uploadImage(@PathVariable Long id, @RequestPart MultipartFile file) {
         dipendenteService.uploadImage(id, file);
         return dipendenteService.getDipendenteById(id);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
+        log.info("Login request:");
+        String token = dipendenteService.authenticateUser(
+                loginRequest.getUsername(),
+                loginRequest.getPassword()
+        );
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 }
