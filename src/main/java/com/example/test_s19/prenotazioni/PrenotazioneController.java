@@ -28,7 +28,7 @@ public class PrenotazioneController {
     public Prenotazione getPrenotazioneById(@PathVariable Long id) {
         return prenotazioneService.getPrenotazioneById(id);
     }
-    @PreAuthorize("#id == authentication.principal.id")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/utente/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse createPrenotazione(@RequestBody PrenotazioneRequest request, @PathVariable Long id) {
