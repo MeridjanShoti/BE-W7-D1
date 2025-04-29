@@ -27,10 +27,9 @@ public class DipendenteController {
 
         return dipendenteService.findAll(page, size, sortBy);
     }
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Dipendente findById(@RequestParam Long id) {
+    public Dipendente findById(@PathVariable Long id) {
         return dipendenteService.getDipendenteById(id);
     }
     @PreAuthorize("isAuthenticated()")

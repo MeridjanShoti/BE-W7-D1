@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -61,7 +62,6 @@ public class DipendenteService {
         dipendente.setPassword(passwordEncoder.encode(request.getPassword()));
         dipendente.setRoles(Set.of(Role.ROLE_USER));
         dipendente.setAvatar("https://ui-avatars.com/api/?name=" + dipendente.getNome() + "+" + dipendente.getCognome());
-        dipendente = dipendenteRepository.save(dipendente);
         emailSenderService.sendEmail(dipendente.getEmail(), "Benvenuto", "Ciao "+dipendente.getNome() + " " + dipendente.getCognome()+"! Benvenuto nella nostra azienda!" );
         return dipendenteRepository.save(dipendente);
     }
