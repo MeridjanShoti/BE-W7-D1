@@ -48,11 +48,13 @@ public class DipendenteController {
     public Dipendente updateDipendente(@PathVariable Long id, @RequestBody DipendenteRequest request) {
         return dipendenteService.updateDipendente(id, request);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDipendente(@PathVariable Long id) {
         dipendenteService.deleteDipendente(id);
     }
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping(value = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
 
