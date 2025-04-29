@@ -113,10 +113,15 @@ public class DipendenteService {
     public Dipendente getDipendenteById(Long id) {
         return dipendenteRepository.findById(id).orElseThrow(() -> new NotFoundException("Dipendente non trovato"));
     }
-    public Dipendente updateDipendente(Long id, DipendenteRequest request) {
-        Dipendente dipendente = dipendenteRepository.findById(id).orElseThrow(() -> new NotFoundException("Dipendente non trovato"));
-        BeanUtils.copyProperties(request, dipendente);
-        return dipendenteRepository.save(dipendente);
+    public Dipendente updateDipendente(Long id, DipendenteRequest request, Dipendente  dipendenteCorrente) {
+        boolean isAdmin = dipendenteCorrente.getRoles().contains(Role.ROLE_ADMIN);
+        if(dipendenteCorrente.getId() == id || isAdmin) {
+            Dipendente dipendente = dipendenteRepository.findById(id).orElseThrow(() -> new NotFoundException("Dipendente non trovato"));
+            BeanUtils.copyProperties(request, dipendente);
+            return dipendenteRepository.save(dipendente);
+        } else {
+            throw new IllegalArgumentException("Non sei autorizzato a modificare questo dipendente");
+        }
     }
     public void deleteDipendente(Long id) {
         if (!dipendenteRepository.existsById(id)) {

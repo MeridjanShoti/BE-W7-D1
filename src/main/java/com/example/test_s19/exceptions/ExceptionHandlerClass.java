@@ -38,6 +38,10 @@ public class ExceptionHandlerClass extends ResponseEntityExceptionHandler {
         }
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ResponseEntity<>("Errore di validazione: " + ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
 
     // validazione da controller
     @Override

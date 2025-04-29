@@ -43,10 +43,11 @@ public class DipendenteController {
         dipendenteService.registerDipendente(request);
         return ResponseEntity.ok("Registrazione avvenuta con successo");
     }
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Dipendente updateDipendente(@PathVariable Long id, @RequestBody DipendenteRequest request) {
-        return dipendenteService.updateDipendente(id, request);
+    public Dipendente updateDipendente(@PathVariable Long id, @RequestBody DipendenteRequest request, @AuthenticationPrincipal Dipendente dipendente) {
+        return dipendenteService.updateDipendente(id, request, dipendente);
     }
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
